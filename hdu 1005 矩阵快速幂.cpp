@@ -9,7 +9,7 @@ struct node
 {
     ll a[15][15];
 }sy;
-node add(node c, node b)
+node muilt(node c, node b)
 {
     node d;
     memset(d.a,0,sizeof(d.a));
