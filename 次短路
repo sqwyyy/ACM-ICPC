@@ -1,0 +1,104 @@
+/*
+求次短路，可以通过求最短路得到次短路长度
+1到n的次短路长度必然产生于：从1走到x的最短路 + edge[x][y] +  y到n的最短路
+首先预处理好1到每一个节点的最短路，和n到每一个节点的最短路
+然后枚举每一条边作为中间边（x，y）或者（y，x），如果加起来长度等于最短路长度则跳过，否则更新。
+从1走到x的最短路 + edge[x][y] +  y到n的最短路  给dist[n] 比较 找大于dist[n] 且是最小的那一个
+*/
+#include<bits/stdc++.h>
+using namespace std;
+const int R = 100000+5;
+const int INF = 0x3f3f3f3f;
+
+struct Node
+{
+    int v;
+    int w;
+    int next;//存储前一个点在数组的位置
+} edge[R*2];
+
+int head[R];//存储最后一个点每个点在的数组位置
+int dist1[R],dist2[R];//距离数组，分别求1到所有点距离和n到所有点距离
+bool vis[R];
+int num;
+int n,m;
+
+void init()
+{
+    num = 0;
+    memset(head,-1,sizeof(head));
+    memset(dist1,0x3f,sizeof(dist1));
+    memset(dist2,0x3f,sizeof(dist2));
+}
+
+void add_edge(int u,int v,int w)//邻接表
+{
+    edge[num].v = v;
+    edge[num].w = w;
+    edge[num].next = head[u];
+    head[u] = num++;
+}
+
+void SPFA(int u,int *dist)//u是给定点 dist是距离数组
+{
+    int i,v,w;
+    queue<int> Q;
+    memset(vis,false,sizeof(vis));
+    dist[u] = 0;
+    vis[u] = true;
+    Q.push(u);
+    while(!Q.empty())
+    {
+        u = Q.front();
+        Q.pop();
+        vis[u] = false;
+        for(i=head[u]; i!=-1; i=edge[i].next)
+        {
+            v = edge[i].v;
+            w = edge[i].w;
+            if(dist[v] > dist[u] + w)
+            {
+                dist[v] = dist[u] + w;
+                if(!vis[v])
+                {
+                    vis[v] = true;
+                    Q.push(v);
+                }
+            }
+        }
+    }
+}
+
+int main()
+{
+    while(scanf("%d%d",&n,&m)!=EOF)//n个点，m条边
+    {
+        int u,v,w;;
+        init();
+        for(int i=1; i<=m; i++) //无向图，双向间图
+        {
+            scanf("%d%d%d",&u,&v,&w);
+            add_edge(u,v,w);
+            add_edge(v,u,w);
+        }
+        SPFA(1,dist1);//求 1 到所有点的最短路
+        SPFA(n,dist2);//求 n 到所有点的最短路
+        int ans = INF;
+        for(int i=1; i<=n; i++)//遍历每个点
+        {
+            for(int j=head[i]; j!=-1; j=edge[j].next)//与i点相连的边
+            {
+                v = edge[j].v;
+                w = edge[j].w;
+                // 1 到 i这一点的最短路， n 到 j这一点的最短路 + edge[i][j]
+                int tem = dist1[i] + dist2[v] + w;
+                if(tem > dist1[n] && tem < ans)
+                {
+                    ans = tem;
+                }
+            }
+        }
+        printf("%d\n",ans);
+    }
+    return 0;
+}

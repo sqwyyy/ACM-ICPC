@@ -1,0 +1,112 @@
+/*在不是#和O的地方放a，所有a在没有隔板情况下不能对视（横行和数列中间没有#）
+，问最多可以放多少个a。*/
+#include<bits/stdc++.h>
+using namespace std;
+char mpt[70][70];
+int maxnum;
+int n,m;
+bool Build(int row,int col)
+{
+    int i,j;
+    for(i=row;i>=0;i--)
+    {
+        if(mpt[i][col]=='a') return false;
+        if(mpt[i][col]=='#') break;
+    }
+    for(j=col;j>=0;j--)
+    {
+        if(mpt[row][j]=='a') return false;
+        if(mpt[row][j]=='#') break;
+    }
+    return true;
+}
+void dfs(int i,int num)
+{
+    int row,col;
+    if(i==n*m)
+    {
+       //  printf("n %d\n",n*m);
+        //printf("num %d %d\n",num,maxnum);
+        if(num>maxnum) maxnum=num;
+        return ;
+    }
+    else
+    {
+        row=i/m;
+        col=i%n;
+        if(mpt[row][col]=='*'&&Build(row,col))
+        {
+            mpt[row][col]='a';
+            dfs(i+1,num+1);
+            mpt[row][col]='*';
+        }
+        dfs(i+1,num);
+    }
+}
+int main()
+{
+    int i,t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        scanf("%d %d",&n,&m);
+        memset(mpt,0,sizeof(mpt));
+        maxnum=0;
+        for(i=0;i<n;i++)
+          scanf("%s",&mpt[i]);
+        dfs(0,0);
+        printf("%d\n",maxnum);
+    }
+    return 0;
+}
+
+/*在一个给定形状的棋盘（形状可能是不规则的）上面摆放棋子，棋子没有区别。
+要求摆放时任意的两个棋子不能放在棋盘中的同一行或者同一列，
+请编程求解对于给定形状和大小的棋盘，摆放k个棋子的所有可行的摆放方案C。*/
+#include<iostream>
+#include <algorithm>
+#include <stdio.h>
+#include <string.h>
+using namespace std;
+int visit[20];
+char mp[20][20];
+int ans;
+int k;
+int n;
+int DFS(int x,int y)
+{
+    if(y>=k)
+    {
+        ans++;
+        return 0;
+    }
+    for(int i=x;i<n;i++)
+    {
+        for(int j=0;j<n;j++)
+        {
+            if(!visit[j]&&mp[i][j]=='#')
+            {
+                visit[j]=true;
+                DFS(i+1,y+1);
+                visit[j]=false;
+            }
+        }
+    }
+    return 0;
+}
+int main()
+{
+    while(cin>>n>>k)
+    {
+        if(n==-1&&k==-1)
+            break;
+        memset(visit,false,sizeof(visit));
+        memset(mp,false,sizeof(mp));
+        for(int i=0;i<n;i++)
+            cin>>mp[i];
+        ans=0;
+        DFS(0,0);
+        cout<<ans<<endl;
+    }
+    return 0;
+}

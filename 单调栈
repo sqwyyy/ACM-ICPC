@@ -1,0 +1,41 @@
+/*给定长度为n的数字序列ai，定义某值为区间[l,r]内ai之和乘上区间[l,r]内最小的ai。
+求最大的该值。
+
+题解：单调栈维护每个ai前面和后面第一个比它小的位置，
+对应题目中要求的值就为该区间之和乘上ai，从头往后遍历一遍。*/
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const int maxn=1e5+10;
+ll a[maxn],l[maxn],r[maxn],sum[maxn],st[maxn];
+int main(){
+    ll n;
+    scanf("%lld",&n);
+    for(ll i=1;i<=n;i++){
+        scanf("%lld",&a[i]);
+        sum[i]=sum[i-1]+a[i];
+    }
+    ll top=0;
+    for(ll i=1;i<=n;i++){
+        while(a[i]<=a[st[top]]&&top>0) top--;
+        l[i]=top==0?1:st[top]+1;
+        st[++top]=i;
+    }
+    top=0;
+    for(ll i=n;i>=1;i--){
+        while(a[i]<=a[st[top]]&&top>0) top--;
+        r[i]=top==0?n:st[top]-1;
+        st[++top]=i;
+    }
+    ll ans=-1;
+    ll id;
+    for(ll i=1;i<=n;i++){
+        if(ans<(ll)((sum[r[i]]-sum[l[i]-1])*(ll)a[i])){
+            ans=(ll)((sum[r[i]]-sum[l[i]-1])*(ll)a[i]);
+            id=i;
+        }
+    }
+    printf("%lld\n",ans);
+    printf("%lld %lld\n",l[id],r[id]);
+    return 0;
+}

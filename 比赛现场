@@ -1,0 +1,2 @@
+freopen("/home/desktop/1.in","r",stdin);//将输入有标准输入流重定向到in.txt
+freopen("/home/desktop/1.out","r",stdin); //将标准输出流重定向到out.txt

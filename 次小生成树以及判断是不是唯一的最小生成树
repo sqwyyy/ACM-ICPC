@@ -1,0 +1,97 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn = 1000;
+int p[maxn], x[maxn], y[maxn], n;
+int maxx;
+struct edge
+{
+    int u, v, cost;
+    bool operator < (const edge& b) const
+    {
+        return cost < b.cost;
+    }
+};
+vector<edge> edges;
+vector<int> mst_edges;
+
+int find_root(int x)
+{
+    if (p[x] == -1) return x;
+    return p[x] = find_root(p[x]);
+}
+
+void kruskal()
+{
+    memset(p, -1, sizeof(p));
+    sort(edges.begin(), edges.end());
+
+    mst_edges.clear();
+    int cost = 0;
+    for (int i = 0; i < edges.size(); i++)
+    {
+        int x = edges[i].u, y = edges[i].v;
+        int rx = find_root(x);
+        int ry = find_root(y);
+        if (rx != ry)
+        {
+            p[rx] = ry;
+            cost += edges[i].cost;
+            mst_edges.push_back(i);
+        }
+    }
+    bool ok = false;
+    for (int i = 0; i < mst_edges.size(); i++)
+    {
+        memset(p, -1, sizeof(p));
+        int ans = 0, k = 0;
+        for (int j = 0; j < edges.size(); j++)
+        {
+            if (mst_edges[i] == j) continue;
+            int x = edges[j].u, y = edges[j].v;
+            int rx = find_root(x);
+            int ry = find_root(y);
+            if (rx != ry)
+            {
+                p[rx] = ry;
+                ans += edges[j].cost;
+                k++;
+            }
+        }
+        if(k=n-1) maxx=min(maxx,ans);//求次小生成树的值
+        if (ans == cost && k == n - 1)//新算出的生成树的代价和最小生成树代价相同，且能构成一棵树（最小生成树的边数肯定是n - 1）
+        {
+            ok = true;
+            break;
+        }
+    }
+
+    if (ok) printf("Not Unique!\n");
+    else printf("%d\n",cost);
+}
+
+int main()
+{
+    //freopen("1.txt", "r", stdin);
+    int T, Case = 0;
+    scanf("%d", &T);
+    while (T--)
+    {
+        int m;
+        maxx=0x3f3f3f3f;
+        scanf("%d %d", &n,&m);
+        edges.clear();
+        mst_edges.clear();
+       // for (int i = 1; i <= n; i++) scanf("%d%d", &x[i], &y[i]);//这种情况是给坐标先求距离的解法
+        for (int i = 1; i <= m; i++)
+        //for (int j = i + 1; j <= n; j++)
+        {
+            int v,u,w;
+            scanf("%d %d %d",&u,&v,&w);
+            //int d = abs(x[i] - x[j]) + abs(y[i] - y[j]);
+            edges.push_back(edge{u,v,w});
+        }
+
+        kruskal();
+    }
+    return 0;
+}

@@ -1,0 +1,123 @@
+struct edges
+{
+    int to;
+    int dis;
+    int next;
+};
+edges edge[maxn];
+int head[maxn], num;
+
+void init() //初始化
+{
+    memset(head, -1, sizeof(head));
+    num = 0;
+}
+
+void add(int from, int to, int len)
+{
+    edge[num].to = to;
+    edge[num].dis = len;
+    edge[num].next = head[from];
+    head[from] = num++;
+}
+
+void visit(int now) //遍历与now相连的边
+{
+    for (int i = head[now]; i != -1; i = edge[i].next)
+    {
+        int to = edge[i].to;
+    }
+}
+/*
+说一下代码，edge[i].to表示第i条边的终点，
+edge[i].next表示与第i条边同起点的下一条边的存储位置，edge[i].dis为边权值。
+*/
+#include <iostream>
+#include <cstdio>
+#include <queue>
+using namespace std;
+
+#define MAXM 500010
+#define MAXN 10010
+#define ANS_MAX 2147483647
+
+struct EDGE {
+	int next;
+	int to;
+	int w;
+};
+EDGE edge[MAXM];
+
+int n, m, st, cnt;
+int head[MAXN];
+
+int d[MAXN];
+bool inq[MAXN];
+queue<int> Q;
+
+inline int Read() {  //读入优化 可忽略
+	char c;
+	int ans = 0;
+	bool Sign = false;
+	while(!isdigit(c=getchar()) && c != '-');
+	if(c == '-') {
+		Sign = true;
+		c = getchar();
+	}
+	do {
+		ans = (ans<<3) + (ans<<1) + (c - '0');
+	} while(isdigit(c=getchar()));
+	return Sign ? -ans : ans;
+}
+
+void Add(int u, int v, int w) {
+	edge[++cnt].next = head[u];
+	edge[cnt].to = v;
+	edge[cnt].w = w;
+	head[u] = cnt;
+}
+
+void read() {
+	int x, y, w;
+	n = Read();
+	m = Read();
+	st = Read();
+	for(int i=1; i<=m; i++) {
+		x = Read();
+		y = Read();
+		w = Read();
+		Add(x, y, w);
+	}
+}
+
+void SPFA(int x) {
+	int k;
+	for(int i=1; i<=n; i++) d[i] = ANS_MAX;
+	d[x] = 0;
+	Q.push(x);
+	inq[x] = true;
+	while(!Q.empty()) {
+		k = Q.front();
+		Q.pop();
+		inq[k] = false;
+		//if(d[k] == ANS_MAX) continue;
+		for(int i=head[k]; i!=0; i=edge[i].next) {
+			int j = edge[i].to;
+			if(d[j] > d[k]+edge[i].w) {
+				d[j] = d[k] + edge[i].w;
+				if(!inq[j]) {
+					Q.push(j);
+					inq[j] = true;
+				}
+			}
+		}
+	}
+	for(int i=1; i<=n; i++) printf("%d ", d[i]);
+	printf("\n");
+}
+
+int main() {
+	read();
+	SPFA(st);
+	return 0;
+}

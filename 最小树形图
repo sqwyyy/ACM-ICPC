@@ -1,0 +1,113 @@
+/*n，m分别代表有n个城市，m条边，然后是s,t,c代表一条从s出发到t的边权值是c。
+问你求一个城市，这个城市到其他所有城市的总和最小*/
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+using namespace std;
+#define N 1010
+#define INF 0x7f7f7f7f
+struct Edge
+{
+    int u,v,w;
+} e[N*N];
+int cnt;
+int in[N];
+int vis[N],pre[N],id[N];
+int minroot;
+void addedge(int u,int v,int w)
+{
+    e[cnt].u=u;
+    e[cnt].v=v;
+    e[cnt++].w=w;
+}
+int Directed_MST(int root,int NV,int NE)
+{
+    int ret = 0;
+    while(true)
+    {
+        ///步骤1：找到最小边
+        for(int i = 0; i < NV; i ++)
+            in[i] = INF;
+        memset(pre,-1,sizeof(pre));
+        for(int i = 0; i < NE; i ++)
+        {
+            int u = e[i].u , v = e[i].v;
+            if(e[i].w < in[v] && u != v)
+            {
+                pre[v] = u;
+                in[v] = e[i].w;
+                if(u==root) minroot=i;
+            }
+        }
+        for(int i = 0; i < NV; i ++)
+        {
+            if(i == root) continue;
+            if(in[i] == INF) return -1;///除了根节点以外有点没有入边，则根无法到达他
+        }
+        int cntnode = 0;
+        memset(id,-1,sizeof(id));
+        memset(vis,-1,sizeof(vis));
+        ///找环
+        in[root] = 0;
+        for(int i = 0; i < NV; i ++) ///标记每个环，编号
+        {
+            ret += in[i];
+            int v = i;
+            while(vis[v] != i && id[v] == -1 && v != root)
+            {
+                vis[v] = i;
+                v = pre[v];
+            }
+            if(v != root && id[v] == -1)
+            {
+                for(int u = pre[v]; u != v; u = pre[u])
+                {
+                    id[u] = cntnode;
+                }
+                id[v] = cntnode ++;
+            }
+        }
+        if(cntnode == 0) break;//无环
+        for(int i = 0; i < NV; i ++)
+            if(id[i] == -1)
+                id[i] = cntnode ++;
+        ///步骤3：缩点，重新标记
+        for(int i = 0; i < NE; i ++)
+        {
+            int u=e[i].u;
+            int v = e[i].v;
+            e[i].u = id[u];
+            e[i].v = id[v];
+            if(e[i].u != e[i].v) e[i].w -= in[v];
+        }
+        NV = cntnode;
+        root = id[root];
+    }
+    return ret;///最小树形图的长度
+}
+
+int main()
+{
+    int n,m,sum;
+    int u,v,w;
+    while(scanf("%d %d",&n,&m)!=EOF)
+    {
+        cnt=0;sum=0;
+        for(int i=0; i<m; i++)
+        {
+            scanf("%d %d %d",&u,&v,&w);
+            addedge(u+1,v+1,w);
+            sum+=w;
+        }
+        sum++;
+        for(int i=1; i<=n; i++)//自己建立一个超级源点
+            addedge(0,i,sum);
+        printf("%d\n",cnt);
+        int ans=Directed_MST(0,n+1,cnt);
+        if(ans==-1||ans>=2*sum)//>=2*sum是这个题的做法其他情况再看
+            printf("impossible\n\n");
+        else
+            printf("%d %d\n\n",ans-sum,minroot-m);
+    }
+    return 0;
+}

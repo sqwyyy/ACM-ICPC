@@ -1,0 +1,80 @@
+#include <cstdio>
+#include <algorithm>
+#include <cstring>
+#include <vector>
+using namespace std;
+const int N=3*1e5+50;
+vector<int> g[N];
+int color[N];
+int pre[N];
+vector<int> res;
+bool flag;
+int root;
+void init(){
+    memset(color,-1,sizeof(color));
+    memset(pre,-1,sizeof(pre));
+    res.clear();
+    flag=true;
+    for(int i=0;i<N;i++){
+        g[i].clear();
+    }
+}
+void dfs(int v,int c){
+    if(!flag){
+        return;
+    }
+    color[v]=c;
+    for(int i=0;i<g[v].size();i++){
+        if(!flag){
+            return;
+        }
+        if(color[g[v][i]]==-1){
+            pre[g[v][i]]=v;
+            dfs(g[v][i],c^1);
+        }
+        else{
+            //不是二分图
+            if(color[g[v][i]]==c){
+                pre[g[v][i]]=v;
+                flag=false;
+                //说明奇环就出现在这里
+                root=g[v][i];
+                return;
+            }
+        }
+    }
+}
+int main(void){
+    init();
+    int n,m;
+    int u,v;
+    scanf("%d%d",&n,&m);
+    for(int i=0;i<m;i++){
+        scanf("%d%d",&u,&v);
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+    dfs(1,0);
+    if(flag){
+        printf("0\n");
+        for(int i=1;i<n;i++){
+            printf("%d ",color[i]);
+        }
+        printf("%d\n",color[n]);
+    }
+    else{
+        int now=pre[root];
+        res.push_back(root);
+        while(root!=now){
+            res.push_back(now);
+            now=pre[now];
+        }
+        int cnt=res.size();
+        printf("%d\n",cnt);
+        for(int i=0;i<cnt-1;i++){
+            printf("%d ",res[i]);
+        }
+        printf("%d\n",res[cnt-1]);
+    }
+    return 0;
+}

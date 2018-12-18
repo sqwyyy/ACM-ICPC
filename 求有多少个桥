@@ -1,0 +1,84 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn=150;
+int n;
+struct node
+{
+	int to;
+	int next;
+}edge[maxn*maxn];
+int head[maxn];
+int index;
+int tot;
+int LOW[maxn],DFN[maxn];
+bool instack[maxn];
+bool cut_point[maxn];
+
+void init()
+{
+	tot=0;
+	index=0;
+	memset(head,-1,sizeof(head));
+	memset(cut_point,0,sizeof(cut_point));
+	memset(instack,0,sizeof(instack));
+}
+
+void addedge(int from,int to)
+{
+	edge[tot].to=to;
+	edge[tot].next=head[from];
+	head[from]=tot++;
+}
+
+void tarjan(int u,int root,int fa)
+{
+	DFN[u]=LOW[u]=++index;
+	instack[u]=1;
+	int cnt=0;
+	for(int i=head[u];i!=-1;i=edge[i].next)
+	{
+		int v=edge[i].to;
+		if(!instack[v])
+		{
+			tarjan(v,root,u);
+			cnt++;
+			if(LOW[u]>LOW[v])
+		 		LOW[u]=LOW[v];
+ 			if(u==root && cnt>1)
+ 				cut_point[u]=1;
+			else if(u!=root && LOW[v]>=DFN[u])
+				cut_point[u]=1;
+		}
+		else if(v!=fa && LOW[u] > DFN[v])
+			LOW[u]=DFN[v];
+	}
+}
+
+int search_cut_point()
+{
+	int ans=0;
+	tarjan(1,1,-1);
+	for(int i=1;i<=n;i++)
+		if(cut_point[i]) ans++;
+	return ans;
+}
+
+int main()
+{
+	while(~scanf("%d",&n) && n)
+	{
+		init();
+		int s,t;
+		while(scanf("%d",&s) && s)
+		{
+			while(getchar()!='\n')
+			{
+				scanf("%d",&t);
+				addedge(s,t);
+				addedge(t,s);
+			}
+		}
+		printf("%d\n",search_cut_point());
+	}
+	return 0;
+}

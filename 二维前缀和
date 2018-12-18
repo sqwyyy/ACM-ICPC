@@ -1,0 +1,32 @@
+/*
+最大子矩阵和
+给定边长至多为5000的矩阵，共有n个点有价值，求出边长为R的价值和最大的子矩阵
+利用二维前缀和
+*/
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn=5000+10;
+int sum[maxn][maxn];
+int main(){
+    int n,r;
+    memset(sum,0,sizeof(sum));
+    scanf("%d %d",&n,&r);
+    for(int i=1;i<=n;i++){
+        int x,y,val;
+        scanf("%d %d %d",&x,&y,&val);
+        sum[x][y]=val;
+    }
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            sum[i][j]+=sum[i-1][j]-sum[i-1][j-1]+sum[i][j-1];
+        }
+    }
+    int ans=-1;
+    for(int i=n;i>=r;i--){
+        for(int j=n;j>=r;j--){
+            ans=max(ans,sum[i][j]-sum[i-r][j]-sum[i][j-r]+sum[i-r][j-r]);
+        }
+    }
+    printf("%d\n",ans);
+    return 0;
+}

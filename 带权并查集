@@ -1,0 +1,75 @@
+/*进行m次操作，M x y 将包含x的集合移动到y上面，C x, 计算x下面有几个元素。
+用p[x]表示x的根结点，cnt[x]表示x所在集合的元素个数，top[x]表示x上面有几个元素。
+每次进行路径压缩时，top[x]都要加上top[p[x]]，cnt和p的操作就是并查集的基本操作。
+最后计算结果是用x所在集合元素的个数 - 在它之上的个数 - 它本身。
+*/
+/*cnt[i]代表着i到自己祖先的权值
+i到旧祖先的权值加上旧祖先到新祖先的权值
+cnt[i]=cnt[i]+cnt[father[i]];
+（此处的cnt[i]还没更新到结点所以还是到旧祖先的权值）*/
+
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+
+const int MAXN = 30030;
+int p[MAXN], cnt[MAXN], top[MAXN], m;
+
+int find_set(int x)
+{
+    int t;
+    if(x != p[x])
+    {
+        t = p[x];
+        p[x] = find_set(p[x]);
+        top[x] += top[t];
+    }
+    return p[x];
+}
+
+void union_set(int x, int y)
+{
+    int nx, ny;
+    nx = find_set(x), ny = find_set(y);
+    if(nx != ny)
+    {
+        p[ny] = nx;
+        top[ny] = cnt[nx];
+        cnt[nx] += cnt[ny];
+    }
+}
+
+void operation()
+{
+    int i, x, y;
+    char op[5];
+    for(i = 1; i < MAXN; i ++)
+    {
+        p[i] = i, cnt[i] = 1, top[i] = 0;
+    }
+    scanf("%d", &m);
+    while(m --)
+    {
+        scanf("%s", op);
+        if('M' == op[0])
+        {
+            scanf("%d%d", &x, &y);
+            union_set(x, y);
+        }
+        else
+        {
+            scanf("%d", &x);
+            int ans, nx;
+            nx = find_set(x);
+            ans = cnt[nx] - top[x] - 1;
+            //x所在集合的元素个数 - 在它上面的个数 - 它本身 就是在它之下的个数
+            printf("%d\n", ans);
+        }
+    }
+}
+
+int main()
+{
+    operation();
+    return 0;
+}

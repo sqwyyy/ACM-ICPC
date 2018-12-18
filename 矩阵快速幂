@@ -1,0 +1,88 @@
+/*
+
+typedef vector<ll> vec;
+typedef vector<vec> mat;
+mat mul(mat& A, mat& B)
+{
+    mat C(A.size(), vec(B[0].size()));
+    for (int i = 0; i < A.size(); i++)
+        for (int k = 0; k < B.size(); k++)
+            if (A[i][k]) // 对稀疏矩阵的优化
+                for (int j = 0; j < B[0].size(); j++)
+                    C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % mod;
+    return C;
+}
+*/
+#include<iostream>
+#include<stdio.h>
+#include<cstring>
+using namespace std;
+#define LL long long
+
+const LL mod = 1000000007;
+
+LL n,x,y;
+
+struct Node
+{
+    LL c[10][10];
+};
+
+Node mult(Node a, Node b)
+{
+    Node c = {0};
+    for(int i = 1; i <=3; i++)
+    for(int j = 1; j <=3; j++)
+    for(int k = 1; k <=3; k++)
+    {
+        c.c[i][j] += (a.c[i][k] * b.c[k][j]+mod) % mod;
+        c.c[i][j] %= mod;
+    }
+    return c;
+}
+
+Node pow(Node t, LL n)
+{
+    Node w;
+    memset(w.c,0,sizeof(w.c));
+    for(int i=1;i<=4;i++) w.c[i][i]=1;
+    while(n)
+    {
+        if( n & 1 )
+        {
+            w = mult(w, t);
+        }
+        t = mult(t, t);
+        n >>= 1;
+        y+=(x*w.c[1][1]+w.c[1][2]+w.c[1][3])%mod;
+    }
+
+    return w;
+}
+
+int main()
+{
+    LL k,p;
+    while(cin>>n>>k>>p)
+    {
+        y=0;
+        if(n==1)
+        {
+            cout<<1<<endl;
+            continue;
+        }
+        if(n==2)
+        {
+            cout<<(k+p)%mod<<endl;
+        }
+        x=(k+p)%mod;
+        y=y+1+x;
+        Node t;
+        t.c[1][1]=k;t.c[1][2]=0;t.c[1][3]=p;
+        t.c[2][1]=0;t.c[2][2]=1;t.c[2][3]=0;
+        t.c[3][1]=0;t.c[3][2]=0;t.c[3][3]=1;
+        Node ans = pow(t,n-2);
+        printf("%lld\n",y);
+    }
+    return 0;
+}

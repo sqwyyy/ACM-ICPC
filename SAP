@@ -1,0 +1,65 @@
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+
+using namespace std;
+
+const int maxn = 100005,maxm = 100005;
+
+struct node
+{
+    int to,next,flow;//目标点，下一条边，剩余流量
+
+    node(void){}
+    node(int a,int b,int c) : to(a),next(b),flow(c){}
+}e[maxm * 2];//正向+反向弧
+
+int d[maxn];//距离标号，距离汇点的最短距离
+int co[maxn];//co[i] = |{k|d[k]=i}|，gap优化
+int final[maxn],cur[maxn];
+int n,m,tot,s,t;
+
+void link(int u,int v,int c)
+{
+    e[++ tot] = node(v,final[u],c),final[u] = tot;
+    e[++ tot] = node(u,final[v],0),final[v] = tot;
+    //这里保证了正，反向弧的标号连续，那么对于第i条边，其反向弧就是i^1
+}
+
+int dfs(int now,int flow)
+{
+    if (now == t) return flow;//流完，退出
+    int use = 0;
+    for(int i = cur[now];i;i = e[i].next)
+    {
+        cur[now] = i;//当前弧优化
+        if (e[i].flow > 0 && d[e[i].to] + 1 == d[now]/*只能沿着最短路走*/)
+        {
+            int tmp = dfs(e[i].to,min(e[i].flow,flow - use));
+            use += tmp,e[i].flow -= tmp,e[i ^ 1].flow += tmp;
+            if (flow == use) return use;
+        }
+    }
+    cur[now] = final[now];
+    if (!(-- co[d[now]])) d[s] = n;//gap
+    ++ co[++ d[now]];
+    return use;
+}
+
+int main()
+{
+    tot = 1;//计算反向弧时更方便
+    scanf("%d%d", &n, &m);//n为点数，m为边数
+    s = 1,t = n;//假定原点为s，汇点为t
+    for(int i = 1;i <= m;i ++)
+    {
+        int u,v,c;
+        scanf("%d%d%d", &u, &v, &c);//一条从u到v，流量为c的边
+        link(u,v,c);
+    }
+    co[0] = n;//初始化，每个点的d都为0
+    int ans = 0;
+    for(;d[s] < n;) ans += dfs(s,1 << 30/*一个较大的值*/);
+    printf("%d\n", ans);
+    return 0;
+}

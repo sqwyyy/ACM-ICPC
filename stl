@@ -1,0 +1,117 @@
+vector基本操作
+(1). 容量
+向量大小： vec.size();
+向量最大容量： vec.max_size();
+更改向量大小： vec.resize();
+向量真实大小： vec.capacity();
+向量判空： vec.empty();
+减少向量大小到满足元素所占存储空间的大小： vec.shrink_to_fit(); //shrink_to_fit
+(2). 修改
+多个元素赋值： vec.assign(); //类似于初始化时用数组进行赋值
+末尾添加元素： vec.push_back();
+末尾删除元素： vec.pop_back();
+任意位置插入元素： vec.insert();
+任意位置删除元素： vec.erase();
+交换两个向量的元素： vec.swap();
+清空向量元素： vec.clear();
+二分查找:
+要先进行排序
+upper_bound返回第一个大于的元素的下标；
+int point[10] = {1,3,7,7,9};
+ int tmp = upper_bound(point, point+5, 7) - point;
+ //按从小到大，7最多能插入数组point的哪个位置
+ tmp = lower_bound(point, point+5, 7) - point;
+ //按从小到大，7最少能插入数组point的哪个位置
+lower_bound返回第一个大于等于元素的下标；
+
+优先队列:
+priority_queue<int,vector<int>,less<int> >q;从大到小
+priority_queue<int,vector<int>,great<int> >q; 从小到大
+struct node
+{
+	int sx,sy,step;
+	friend bool operator <(const node &s1,const node &s2)
+    {
+        return s1.step>s2.step; //小到大
+    }
+};
+
+全排列:使用前必须是升序排列
+int num[3]={1,2,3};
+    do
+    {
+        cout<<num[0]<<" "<<num[1]<<" "<<num[2]<<endl;
+    }while(next_permutation(num,num+3));
+
+    atof()：将字符串转换为双精度浮点型值。
+    atoi()：将字符串转换为整型值。
+    atol()：将字符串转换为长整型值。
+    strtod()：将字符串转换为双精度浮点型值，并报告不能被转换的所有剩余数字。
+    strtol()：将字符串转换为长整值，并报告不能被转换的所有剩余数字。
+    strtoul()：将字符串转换为无符号长整型值，并报告不能被转换的所有剩余数字。
+
+  一、string截取、替换、查找子串函数
+
+ 1. 截取子串
+ s.substr(pos, n)    截取s中从pos开始（包括0）的n个字符的子串，并返回
+ s.substr(pos)        截取s中从从pos开始（包括0）到末尾的所有字符的子串，并返回
+ 2. 替换子串
+ s.replace(pos, n, s1)    用s1替换s中从pos开始（包括0）的n个字符的子串
+ 3. 查找子串
+ s.find(s1)         查找s中第一次出现s1的位置，并返回（包括0）没有找到就返回-1
+ s.rfind(s1)        查找s中最后次出现s1的位置，并返回（包括0）没有找到就返回-1
+ s.substr(5,6)                       从索引5开始6个字符
+ s.earse
+erase(pos,n); 删除从pos开始的n个字符，比如erase(0,1)就是删除第一个字符
+erase(position);删除position处的一个字符(position是个string类型的迭代器)
+erase(first,last);删除从first到last之间的字符（first和last都是迭代器）
+ transform(p.line.begin(), p.line.end(), p.lower.begin(), ::tolower)     转小写
+
+双端队列:
+deque<int> d
+deque(size_typen);//创建一个具有n个元素的deque对象，每个元素采用它的类型下的默认值
+deque<int> d(10);//deque对象d有10个元素，每个元素初始值为0。
+deque<double> d(10,5);//创建一个具有n个元素的deque对象，这些元素的初始值为value。
+
+1)void pop_front();//删除deque的第一个元素
+2)void pop_back();//删除deque的最后一个元素
+3)iterator erase(iteratorpos); //删除pos所指向的元素
+4)iterator erase(iterator first, iterator last);//删除迭代区间[first,last)所指向的所有元素
+5)void clear();//删除所有元素
+使用push_back()方法从尾部插入元素，会不断扩张队列。
+使用push_front()从头部插入元素，不会增加新元素，只将原来有的元素覆盖。
+resize返回deque容器的大小
+
+set
+count判断元素是否存在 不存在返回0
+strcat函数
+char d[20] = "GoldenGlobal";
+char* s = "View";
+clrscr();
+strcat(d,s);
+
+strcmp函数
+设这两个字符串为str1，str2，
+若str1==str2，则返回零；
+若str1<str2，则返回负数；
+若str1>str2，则返回正数。
+
+strcpy函数 strcpy(s1,s2);
+
+list
+list<int> a;
+a.push_back(1);
+调用resize(n)将list的长度改为只容纳n个元素，超出的元素将被删除。
+如果n比list原来的长度长，那么默认超出的部分元素置为0。
+也可以用resize(n, m)的方式将超出的部分赋值为m。
+使用list的成员函数push_back和push_front插入一个元素到list中。
+其中push_back()是从list的末端插入，而push_front()是从list的头部插入。
+通过front()可以获得list容器中的头部元素，通过back()可以获得list容器的最后一个元素。
+使用pop_back()可以删掉尾部第一个元素，pop_front()可以删掉头部第一个元素。
+swap(a,b);//交换两个链表
+reverse(b.begin(),b.end());//逆置
+a.splice(a.begin(), b);//把b合并到a上
+a.merge(b)//merge合并是会自动排序的、调用结束后b变为空，a中元素包含原来a和b的元素。
+a.insert(a.begin(),100);  //在a的开始位置（即头部）插入100
+a.erase(a.begin());  //将a的第一个元素删除
+a.remove(7);//删除a中值为7的元素

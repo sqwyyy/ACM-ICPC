@@ -1,0 +1,59 @@
+两个人玩游戏，有n个轮次，初始分数为m，每个轮次有三种选择，将m增加a，将m减少b，如果c==1,可以将m取
+相反数。只能选择一个对m进行操作。K玩家想要使最终分数大于等于k，S玩家想要使最终分数小于等于l，K玩家
+先手，问最终K玩家能否使分数大于等于k。
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+
+const int inf = 0x3f3f3f3f;
+
+
+using namespace std;
+int a[1000+5],b[1000+5],c[1000+5];
+int dp[1000+5][200+5];
+int n,m,l,k;
+
+int dfs(int sum,int dep) {
+    if(dep>=n) return sum;
+    if(dp[dep][sum+100]!=inf)
+    {
+        //printf("dp %d\n",dp[dep][sum+100]);
+        return dp[dep][sum+100];
+    }
+    if(dep&1)
+    {
+        int x=inf;
+        if(a[dep]) x=min(x,dfs(min(sum+a[dep],100),dep+1));
+        if(b[dep]) x=min(x,dfs(max(sum-b[dep],-100),dep+1));
+        if(c[dep]) x=min(x,dfs(-sum,dep+1));
+        dp[dep][sum+100]=x;
+    }
+    else
+    {
+        int x=-inf;
+        if(a[dep]) x=max(x,dfs(min(sum+a[dep],100),dep+1));
+        if(b[dep]) x=max(x,dfs(max(sum-b[dep],-100),dep+1));
+        if(c[dep]) x=max(x,dfs(-sum,dep+1));
+        dp[dep][sum+100]=x;
+    }
+    return dp[dep][sum+100];
+}
+
+int main() {
+
+    while(~scanf("%d %d %d %d",&n,&m,&l,&k)) {
+        for(int i=0;i<=1000;i++)
+        {
+            for(int j=0;j<=200;j++) dp[i][j]=inf;
+        }
+        for(int i = 0; i < n; i++)
+            scanf("%d %d %d",&a[i],&b[i],&c[i]);
+         int ans=dfs(m, 0);
+         //printf("ans %d\n",ans);
+         if(ans>=l) printf("Good Ending\n");
+         else if(ans<=k) printf("Bad Ending\n");
+         else printf("Normal Ending\n");
+    }
+    return 0;
+}

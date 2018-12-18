@@ -1,0 +1,108 @@
+#include<bits/stdc++.h>
+typedef long long LL;
+using namespace std;
+const int N = 1024;
+const int M = 100010;
+const int inf = ~0u>>2;
+struct edg {
+    int to;
+    int val;
+    int next;
+    edg() {}
+    edg(int a, int b, int c): to(a), val(b), next(c) {}
+} g[M<<1], rg[M<<1];
+
+struct node {
+    int f, g, v;
+    node() {}
+    node(int f, int g, int v) : f(f), g(g), v(v) {}
+    bool operator < (const node& x) const {
+        return x.f < f;
+    }
+};
+
+int inq[N];
+int head[N];
+int rhead[N];
+int dis[N];
+int t, k;
+
+void init() {
+    memset(head, -1,sizeof(head));
+    memset(rhead, -1,sizeof(rhead));
+    memset(inq, 0,sizeof(inq));
+    t = 0;
+    for(int i = 0; i < N; ++i)  dis[i] = inf;
+}
+
+void add(int u, int v, int w) {
+    g[t] = edg(v, w, head[u]);
+    rg[t] = edg(u, w, rhead[v]);
+    head[u] = t;
+    rhead[v] = t++;
+}
+
+void spfa(int ed)//反向建边处理出各个点到终点的距离
+{
+    int i, u, v, w;
+    queue<int> q;
+    q.push(ed);
+    inq[ed] = 1;
+    dis[ed] = 0;
+
+    while(!q.empty()) {
+        u = q.front();
+
+        for(i = rhead[u]; i != -1; i = rg[i].next) {
+            v = rg[i].to; w = rg[i].val;
+            if(dis[v] > dis[u] + w) {
+                dis[v] = dis[u] + w;
+                if(!inq[v]) { inq[v] = 1; q.push(v);}
+            }
+        }
+        inq[u] = 0; q.pop();
+    }
+}
+
+int A_star(int st, int ed) {
+    priority_queue<node> Q;
+    if(dis[st] == inf)  return -1;
+    int v, w;
+    memset(inq,0,sizeof(inq));
+    Q.push(node(dis[st], 0, st));
+
+    while(!Q.empty()) {
+        node cur = Q.top();
+        Q.pop(); inq[cur.v] ++;
+        if(inq[ed] == k)    return cur.f;
+        if(inq[cur.v] > k)  continue;
+
+        for(int i = head[cur.v]; i != -1; i = g[i].next) {
+            v = g[i].to; w = g[i].val;
+            node New(dis[v] + cur.g + w, cur.g + w, v);
+            Q.push(New);
+        }
+    }
+
+    return -1;
+}
+
+int main() {
+    //freopen("data.in", "r", stdin);
+
+    int n, m, i;
+    int u, v, w;
+    int st, ed;
+    init();
+    scanf("%d%d", &n, &m);
+    for(i = 0; i < m; ++i) {
+        scanf("%d%d%d", &u, &v, &w);
+        add(u, v, w);
+    }
+    int t;
+    scanf("%d%d%d", &st, &ed, &k);
+    spfa(ed);
+    if(st == ed)    k++;
+    printf("%d\n", A_star(st, ed));
+    return 0;
+}

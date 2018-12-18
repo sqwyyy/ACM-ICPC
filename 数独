@@ -1,0 +1,79 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+int fla;
+int mpt[10][10];
+bool visx[9][10],visy[9][10],visk[9][10];
+int say(int i,int j)
+{
+	return i/3*3+j/3;
+}
+int check(int num,int x,int y)
+{
+	if(!visx[x][num]&&!visy[y][num]&&!visk[say(x,y)][num])return 1;
+	else return 0;
+}
+void boo(int x,int y)
+{
+	if(fla==1)return ;
+	if(x==9&&y==0)
+	{
+		for(int i=0;i<9;i++)
+		{
+			for(int j=0;j<9;j++)
+			{
+				if(j==0)printf("%d",mpt[i][j]);
+				else printf(" %d",mpt[i][j]);
+			}
+			printf("\n");
+		}
+		fla=1;
+	}
+	if(y==9)boo(x+1,0);
+	if(mpt[x][y]!=0)boo(x,y+1);
+	if(mpt[x][y]==0)
+	{
+		for(int i=1;i<=9;i++)
+		{
+			if(check(i,x,y))
+			{
+				mpt[x][y]=i;
+				visx[x][i]=1;
+				visy[y][i]=1;
+				visk[say(x,y)][i]=1;
+				boo(x,y+1);
+				mpt[x][y]=0;
+				visx[x][i]=0;
+				visy[y][i]=0;
+				visk[say(x,y)][i]=0;
+			}
+		}
+	}
+}
+int main()
+{
+	int n,i,j;
+    memset(visx,0,sizeof(visx));
+    memset(visy,0,sizeof(visy));
+    memset(visk,0,sizeof(visk));
+    char c;
+    for(i=0;i<9;i++)
+    {
+        for(j=0;j<9;j++)
+        {
+            cin>>c;
+            if(c>='0'&&c<='9') mpt[i][j]=c-'0';
+            else mpt[i][j]=0;
+            if(mpt[i][j]!=0)
+            {
+               visx[i][mpt[i][j]]=1;
+               visy[j][mpt[i][j]]=1;
+               visk[say(i,j)][mpt[i][j]]=1;
+            }
+        }
+    }
+    boo(0,0);
+    fla=0;
+	return 0;
+}
