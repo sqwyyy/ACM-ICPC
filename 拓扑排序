@@ -1,56 +1,71 @@
-#include<bits/stdc++.h>
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<queue>
 using namespace std;
-#define inf 1<<31
+const int maxn=2e5+10;
 
-const int maxn = 505;
-bool mpt[maxn][maxn];
-int lev[maxn];
-vector<int> v[maxn];
-priority_queue<int, vector<int>, greater<int> > q;
-
-void topo(int n) {
-    for (int i = 1; i <= n; i++) {
-        if (!lev[i]) q.push(i);
-    }
-    int flag = 0;
-    while(!q.empty()) {
-        int now = q.top();
-        q.pop();
-        if (flag) printf(" %d", now);
-        else printf("%d", now);
-        flag++;
-        for (int i = 0; i < v[now].size(); i++) {
-            int next = v[now][i];
-            lev[next]--;
-            if (!lev[next]) q.push(next);
-        }
-    }
-    if (flag != n) {
-        printf("这个图有环、并没有拓扑排序\n");
-    }
+int indegree[maxn];
+int n,m;
+int a[maxn];
+struct edges
+{
+    int to;
+    int dis;
+    int next;
+};
+edges edge[maxn];
+int head[maxn], num;
+pair<int,int>p[maxn];
+void init() //初始化
+{
+    memset(head, -1, sizeof(head));
+    num = 0;
 }
 
-int main() {
-    int n, m;
-    while(scanf("%d%d", &n, &m) != EOF) {
-        memset(mpt, 0, sizeof(mpt));
-        for (int i = 1; i <= m; i++) {
-            int a, b;
-            scanf("%d%d", &a, &b);
-            mpt[a][b] = 1;
+void add(int from, int to, int len)
+{
+    edge[num].to = to;
+    edge[num].dis = len;
+    edge[num].next = head[from];
+    head[from] = num++;
+}
+int topu(int x)
+{
+    queue<int> q;
+    int cnt = 0;
+    while(!q.empty())
+        q.pop();
+    for(int i = 1; i <= n ; i++)
+        if(indegree[i] == 0)
+            q.push(i);
+    int u;
+    while(!q.empty())
+    {
+        u = q.front();
+        a[++cnt] = u;
+        q.pop();
+        for(int i = head[u]; i!=-1;i=edge[i].next)
+        {
+            int to=edge[i].to;
+            indegree[to] --;
+            if(indegree[to] == 0)
+                q.push(to);
         }
-        for (int i = 1; i <= n; i++) {
-            v[i].clear();
-            for (int j = 1; j <= n; j++) {
-                if (mpt[i][j]) {
-                    v[i].push_back(j);
-                    lev[j]++;
-                }
-            }
-        }
-        topo(n);
-        printf("\n");
     }
-    system("pause");
+    //printf("%d\n",cnt);
+    return cnt==n;//判断是否有环
+}
+int main()
+{
+    init();
+    int u,v;
+    scanf("%d %d",&n,&m);
+    for(int i=1;i<=m;i++){
+        int u,v;
+        scanf("%d %d",&u,&v);
+        indegree[v]++;
+    }
+    topu();
     return 0;
 }
