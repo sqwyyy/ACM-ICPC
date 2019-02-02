@@ -1,0 +1,40 @@
+#include<bits/stdc++.h>
+using namespace std;
+//求含有6的数字
+typedef long long ll;
+int a[20];
+int dp[20][20];
+int dfs(int pos,int sta,bool limit)
+{
+    if(pos==-1) return sta;
+    if(!limit && dp[pos][sta]!=-1) return dp[pos][sta];
+    int up=limit ? a[pos] : 9;
+    int tmp=0;
+    for(int i=0;i<=up;i++)
+    {
+        tmp+=dfs(pos-1,i==6||sta,limit && i==a[pos]);
+    }
+    if(!limit) dp[pos][sta]=tmp;
+    return tmp;
+}
+int solve(int x)
+{
+    int pos=0;
+    while(x)
+    {
+        a[pos++]=x%10;
+        x/=10;
+    }
+    return dfs(pos-1,0,true);
+}
+int main()
+{
+    int le,ri;
+    //memset(dp,-1,sizeof dp);可优化
+    while(~scanf("%d%d",&le,&ri) && le+ri)
+    {
+        memset(dp,-1,sizeof dp);
+        printf("%d\n",solve(ri)-solve(le-1));
+    }
+    return 0;
+}
