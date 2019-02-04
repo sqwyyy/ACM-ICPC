@@ -1,7 +1,7 @@
 强连通图的边最多n*(n-1) 最少n
 连通图的边最多n*(n-1)/2 最少n
 
-
+cout <<fixed<< setprecision(7) << ans <<endl;
 
 栈优化 #pragma comment(linker, "/STACK:1024000000,1024000000")
 
