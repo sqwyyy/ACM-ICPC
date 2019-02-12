@@ -1,0 +1,8 @@
+c++随机函数范围比rand大
+rand的范围是32767
+
+
+mt19937 gen(chrono::steady_clock::now().time_since_epoch().count());
+uniform_int_distribution<> dis(1,n);
+
+int a=dis(gen);这样即可
