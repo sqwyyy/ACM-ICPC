@@ -1,0 +1,40 @@
+/*
+最小环是指在一个图中，有n个节点构成的边权和最小的环(n>=3)。
+
+杭州有N个景区，景区之间有一些双向的路来连接，现在8600想找一条旅游路线，这个路线从A点出发并且最后回到A点，
+假设经过的路线为V1,V2,....VK,V1,那么必须满足K>2,就是说至除了出发点以外至少要经过2个其他不同的景区，而且不能重复经过同一个景区。
+现在8600需要你帮他找一条这样的路线，并且花费越少越好。
+
+*/
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn = 105;
+const int inf = 1e8;
+int n,m;
+int dis[maxn][maxn],mp[maxn][maxn];
+void floyd(){
+    int MinCost = inf;
+    for(int k=1;k<=n;k++){
+        for(int i=1;i<k;i++)
+            for(int j=i+1;j<k;j++)
+                MinCost = min(MinCost,dis[i][j]+mp[i][k]+mp[k][j]);//跟新k点之前枚举ij求经过ijk的最小环
+        for(int i=1;i<=n;i++)
+            for(int j=1;j<=n;j++)
+                dis[i][j]=min(dis[i][j],dis[i][k]+dis[k][j]);      //跟新k点
+    }
+    if(MinCost==inf)puts("It's impossible.");
+    else printf("%d\n",MinCost);
+}
+int main()
+{
+    scanf("%d%d",&n,&m);
+    for(int i=1;i<=n;i++)for(int j=1;j<=n;j++)mp[i][j]=dis[i][j]=inf;
+    for(int i=0;i<m;i++){
+        int u,v,w;
+        scanf("%d%d%d",&u,&v,&w);
+        mp[u][v]=mp[v][u]=dis[u][v]=dis[v][u]=min(w,mp[u][v]);
+    }
+    floyd();
+    return 0;
+}
+
