@@ -1,0 +1,70 @@
+#include<bits/stdc++.h>
+#define ll long long
+using namespace std;
+const int maxn = 2e5 + 10;
+ll mn[maxn * 4], tag[maxn * 4], p[maxn * 4], a[maxn];//p[1]代表1~n区间最小值最靠近右边的下标
+#define ls o * 2
+#define rs o * 2 + 1
+#define m (l + r) / 2
+void pushup(int o) {
+    if (mn[ls] < mn[rs])
+        mn[o] = mn[ls], p[o] = p[ls];
+    else
+        mn[o] = mn[rs], p[o] = p[rs];
+}
+void pushdown(int o) {
+    tag[ls] += tag[o]; tag[rs] += tag[o];
+    mn[ls] += tag[o]; mn[rs] += tag[o];
+    tag[o] = 0;
+}
+void build(int o, int l, int r) {
+    if (l == r) {
+        scanf("%lld", &mn[o]);
+        p[o] = l;
+        return;
+    }
+    build(ls, l, m);
+    build(rs, m + 1, r);
+    pushup(o);
+}
+void up(int o, int l, int r, int ql, int qr, ll v) {
+    if (ql > qr)
+        return;
+    if (l >= ql && r <= qr) {
+        mn[o] += v;
+        tag[o] += v;
+        return;
+    }
+    pushdown(o);
+    if (ql <= m)
+        up(ls, l, m, ql, qr, v);
+    if (qr > m)
+        up(rs, m + 1, r, ql, qr, v);
+    pushup(o);
+}
+int query(int o, int l, int r, int ql, int qr) {
+    if (l >= ql && r <= qr) {
+        return mn[o];
+    }
+    pushdown(o);
+    int ans=1e9;
+    if (ql <= m)
+        ans=min(ans,query(ls, l, m, ql, qr));
+    if (qr > m)
+        ans=min(ans,query(rs, m + 1, r, ql, qr));
+    return ans;
+}
+int main() {
+    int n;
+    scanf("%d", &n);
+    build(1, 1, n);
+    for (int i = 1; i <= n; i++) {
+        a[p[1]] = i;
+        int k = p[1];
+        up(1, 1, n, k, k, 1e11);
+        up(1, 1, n, k + 1, n, -i);
+    }
+    for (int i = 1; i <= n; i++)
+        printf("%lld ", a[i]);
+    return 0;
+}
