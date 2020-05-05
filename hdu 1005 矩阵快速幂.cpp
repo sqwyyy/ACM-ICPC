@@ -4,7 +4,8 @@
 #include<string>
 typedef long long ll;
 using namespace std;
-int b,c,n;
+int n,k;
+const ll mod =1e9+7;
 struct node
 {
     ll a[15][15];
@@ -16,7 +17,7 @@ node muilt(node c, node b)
     for(int i=1;i<=2;i++)
         for(int j=1;j<=2;j++)
                 for(int k=1;k<=2;k++)
-                    d.a[i][j]=(d.a[i][j]+c.a[i][k]*b.a[k][j])%7;
+                    d.a[i][j]=(d.a[i][j]+c.a[i][k]*b.a[k][j])%mod;
     return d;
 }
 node fast(node sw,int b)
@@ -28,21 +29,20 @@ node fast(node sw,int b)
 
     while(b)
     {
-        if(b&1) ss=add(ss,sw);
-        sw=add(sw,sw);
+        if(b&1) ss=muilt(ss,sw);
+        sw=muilt(sw,sw);
         b>>=1;
     }
     return ss;
 }
 int main()
 {
-    while(scanf("%d %d %d",&b,&c,&n)!=EOF&&b&&c&&n)
+    while(scanf("%d %d",&n,&k)!=EOF)
     {
-      if(n<=2) {cout<<"1"<<endl;continue;}
       node nn;
       memset(nn.a,0,sizeof(nn.a));
-      nn.a[1][1]=b;nn.a[1][2]=c;nn.a[2][1]=1;nn.a[2][2]=0;
-      node w=fast(nn,n-2);
-      cout<<(w.a[1][1]%7+w.a[1][2]%7)%7<<endl;
+      nn.a[1][1]=0;nn.a[1][2]=k-1;nn.a[2][1]=1;nn.a[2][2]=k-2;
+      node w=fast(nn,n);
+      cout<<(w.a[1][1]%mod)<<endl;
     }
 }
